@@ -19,12 +19,7 @@ def monteCarloCallPrice(I,K,time,r,sd,N):
 
  #discount rate over time makes up for risk-free alt investments
  optionPrice = np.exp(-r*time)*np.mean(payoffs)
- approxOptionPrice = str(round(optionPrice,4))
- return(approxOptionPrice)
- 
-print("Monte Carlo estimate of call option price:" + str(monteCarloCallPrice(S0,E,T,r,sigma,N)))
-
-import numpy as np
+ return(optionPrice)
 
 def AbrSteErfApprox(x):
   #cant support scripy, so using approx for error function
@@ -46,9 +41,28 @@ def normalCDF(x):
 def blackScholesCallPrice(I,K,time,r,sd,N) :
  d1 = (np.log(I/K) + (r + 0.5*sd**2)*time)/(sd*np.sqrt(time))
  d2 = d1 - sd*np.sqrt(time)
-  
  optionBSPrice = I*normalCDF(d1) - K*np.exp(-r*time)*normalCDF(d2)
- approxBSOptionPrice = str(round(optionBSPrice,4))
- return(approxBSOptionPrice)
+ return(optionBSPrice)
  
+def montBlackDiff(a,b):
+ return(np.abs(a-b))
+ 
+def avrgDifference(n):
+ sum = 0
+ for i in range(n):
+  m = monteCarloCallPrice(S0,E,T,r,sigma,N)
+  b = blackScholesCallPrice(S0,E,T,r,sigma,N)
+  sum = sum + np.abs(m-b)
+  avrg = sum/n
+  return(avrg)
+
+
+print(" ") 
+x = input("Enter number of test samples:")
 print("Black-Scholes estimate of call option price:" + str(blackScholesCallPrice(S0,E,T,r,sigma,N)))
+print("Monte Carlo estimate of call option price:" + str(monteCarloCallPrice(S0,E,T,r,sigma,N)))
+
+print("Absolute difference is: " + str(montBlackDiff(blackScholesCallPrice(S0,E,T,r,sigma,N),monteCarloCallPrice(S0,E,T,r,sigma,N))))
+
+
+print("Average difference of " + x + " samples is " + str(avrgDifference(int(x))))
